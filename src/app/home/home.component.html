@@ -1,20 +1,39 @@
 <input class="form-control form-control-lg" type="text" placeholder="Large input">
-  <!-- <div class="container md-form form-lg">
-      <input type="text" id="productSearch" class="form-control form-control-lg" [(ngModel)]="productSearch">
-      <label for="inputLGEx">Search for the products</label>
-  </div> -->
-
-<input class="form-control form-control-lg" type="text" placeholder="Search for the products" [(ngModel)]="productSearch"> 
+<input class="form-control form-control-lg" type="text" placeholder="Search for the products" [(ngModel)]="productSearch" autofocus (keyup.enter)="compare()"> 
   <div class="text-center">
       <button type="button" class="btn btn-primary btn-lg" (click)="compare()">Compare</button>
   </div>
+  <br>
 
-  <div *ngIf='products != null'>
-      
-      <!-- <pre>{{products | json}}</pre> -->
-      <ul *ngFor="let product of products">
-          <li *ngIf="product.title != null"> 
-          {{ product.title }} ({{ product.id }})
-          </li>
-      </ul>
+  <div class="loader" *ngIf="compareClicked && !dataLoaded"></div>
+
+  <div class="row" >
+  <div *ngIf='fkproducts != null && fkproducts.products != null && fkproducts.products.length > 0' class="col-lg-6 col-md-6 col-sd-12 col-sm-12">
+      <!-- <pre>{{products | json}}</pre>  -->
+      <div *ngFor="let product of fkproducts.products">
+          <!--Card-->
+        <div class="card" *ngIf="product != null">
+        <!--Card image-->
+        <div class="view overlay" *ngIf="product.productBaseInfo != null && product.productBaseInfo.productAttributes != null && product.productBaseInfo.productAttributes.title">
+            <img src="../assets/defaultMobile.png" class="img-fluid" alt="{{product.productBaseInfo.productAttributes.title}}">
+            <a href="#">
+                <div class="mask rgba-white-slight"></div>
+            </a>
+        </div>
+        <!--Card content-->
+        <div class="card-body" *ngIf="product.productBaseInfo != null && product.productBaseInfo.productAttributes != null">
+            <!--Title-->
+            <h4 class="card-title" *ngIf="product.productBaseInfo.productAttributes.title">{{product.productBaseInfo.productAttributes.title}}</h4>
+            <!--Text-->
+            <p *ngIf="product.productBaseInfo.productAttributes.sellingPrice != null && product.productBaseInfo.productAttributes.sellingPrice.amount">Price: {{product.productBaseInfo.productAttributes.sellingPrice.amount}} {{product.productBaseInfo.productAttributes.sellingPrice.currency || 'RS'}} </p>
+            <p *ngIf="product.productBaseInfo.productAttributes.productDescription != null" class="card-text">{{product.productBaseInfo.productAttributes.productDescription}}</p>
+            <a *ngIf="product.productBaseInfo.productAttributes.productUrl != null" href="{{product.productBaseInfo.productAttributes.productUrl}}" target="_blank" class="btn btn-primary" title="Click to open in Flikpart">Open</a>
+        </div>
+
+    </div>
+    <!--/.Card-->
+      </div>
   </div>
+</div>
+    <!--/.Card-->
+  <span *ngIf = "compareClicked == false && dataLoaded && (fkproducts == null || fkproducts.products == null || (fkproducts != null && fkproducts.products != null && fkproducts.products.length <=0))">No matching products were found !!</span>
