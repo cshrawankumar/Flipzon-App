@@ -12,10 +12,10 @@ export class DataService {
   flipkartUrl: string = "http://localhost:3000/search?";
   constructor(private _htc:HttpClient) { }
  
-  searchFlipkart(search:string):Observable<Object[]>{
+  searchFlipkart(search:string,count:number):Observable<Object[]>{
    let httpParams = new HttpParams()
                         .set('query', search)
-	                .set('count', "5");
+	                .set('count', count.toString());
     console.log(httpParams);
     return this._htc.get<Object[]>(this.flipkartUrl,
     {

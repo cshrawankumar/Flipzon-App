@@ -4,6 +4,15 @@
       <button type="button" class="btn btn-primary btn-lg" (click)="compare()">Compare</button>
   </div>
   <br>
+  <div class="alert alert-danger container" *ngIf="errMsg != null && errMsg != ''">
+    <div align="center">
+        <ul class="fa-ul">
+            <li>
+                <i class="fa fa-exclamation-triangle fa-li fa-lg"></i> {{errMsg}}
+            </li>
+        </ul>
+    </div>
+</div>
 
   <div class="loader" *ngIf="compareClicked && !dataLoaded"></div>
 
@@ -13,24 +22,26 @@
       <div *ngFor="let product of fkproducts.products">
           <!--Card-->
         <div class="card" *ngIf="product != null">
+                <div class="row">
         <!--Card image-->
-        <div class="view overlay" *ngIf="product.productBaseInfo != null && product.productBaseInfo.productAttributes != null && product.productBaseInfo.productAttributes.title">
-            <img src="../assets/defaultMobile.png" class="img-fluid" alt="{{product.productBaseInfo.productAttributes.title}}">
+        <div class="col-lg-6 col-md-6  col-sm-6 view overlay" align="center" *ngIf="product.productBaseInfo != null && product.productBaseInfo.productAttributes != null && product.productBaseInfo.productAttributes.title">
+            <img src="{{defaultImgUrl || '../assets/defaultMobile.png'}}" class="img-fluid" alt="{{product.productBaseInfo.productAttributes.title}}">
             <a href="#">
                 <div class="mask rgba-white-slight"></div>
             </a>
         </div>
         <!--Card content-->
-        <div class="card-body" *ngIf="product.productBaseInfo != null && product.productBaseInfo.productAttributes != null">
+        <div class="col-lg-6 col-md-6  col-sm-6 card-body" *ngIf="product.productBaseInfo != null && product.productBaseInfo.productAttributes != null">
             <!--Title-->
             <h4 class="card-title" *ngIf="product.productBaseInfo.productAttributes.title">{{product.productBaseInfo.productAttributes.title}}</h4>
             <!--Text-->
             <p *ngIf="product.productBaseInfo.productAttributes.sellingPrice != null && product.productBaseInfo.productAttributes.sellingPrice.amount">Price: {{product.productBaseInfo.productAttributes.sellingPrice.amount}} {{product.productBaseInfo.productAttributes.sellingPrice.currency || 'RS'}} </p>
-            <p *ngIf="product.productBaseInfo.productAttributes.productDescription != null" class="card-text">{{product.productBaseInfo.productAttributes.productDescription}}</p>
-            <a *ngIf="product.productBaseInfo.productAttributes.productUrl != null" href="{{product.productBaseInfo.productAttributes.productUrl}}" target="_blank" class="btn btn-primary" title="Click to open in Flikpart">Open</a>
+            <!-- <p *ngIf="product.productBaseInfo.productAttributes.productDescription != null" class="card-text">{{product.productBaseInfo.productAttributes.productDescription}}</p> -->
+            <a *ngIf="product.productBaseInfo.productAttributes.productUrl != null" href="{{product.productBaseInfo.productAttributes.productUrl}}" target="_blank" class="btn btn-primary" title="Click to shop in Flikpart"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Show Now</a>
         </div>
 
     </div>
+      </div>
     <!--/.Card-->
       </div>
   </div>
@@ -38,33 +49,43 @@
     <div *ngIf='amazonproducts != null && (amazonproducts.ItemSearchResponse != null || amazonproducts.ItemSearchErrorResponse != null)' class="col-lg-6 col-md-6 col-sd-12 col-sm-12">
         <div *ngIf="amazonproducts.ItemSearchResponse != null && amazonproducts.ItemSearchResponse.Items != null && amazonproducts.ItemSearchResponse.Items.Item != null && amazonproducts.ItemSearchResponse.Items.Item.length > 0">
                 <!-- <pre>{{amazonproducts.ItemSearchResponse | json}}</pre> -->
-                <div *ngFor="let product of amazonproducts.ItemSearchResponse.Items.Item">
+                <div *ngFor="let product of amazonproducts.ItemSearchResponse.Items.Item | slice:0:recordCount;">
                 <div class="card" *ngIf="product.ItemAttributes != null">
+                        <div class="row">
                         <!--Card image-->
-                        <div class="view overlay" *ngIf="product.ItemAttributes.Title != null">
-                            <img src="../assets/defaultMobile.png" class="img-fluid" alt="{{product.ItemAttributes.Title}}">
+                        <div class="col-lg-6 col-md-6 col-sm-6  view overlay" *ngIf="product.ItemAttributes.Title != null" align="center">
+                            <img src="{{product.MediumImage.URL || product.LargeImage.URL}}" class="img-fluid" alt="{{product.ItemAttributes.Title}}">
                             <a href="#">
                                 <div class="mask rgba-white-slight"></div>
                             </a>
                         </div>
                         <!--Card content-->
-                        <div class="card-body">
+                        <div class="col-lg-6 col-md-6 col-sm-6 card-body">
                             <!--Title-->
                             <h4 class="card-title" *ngIf="product.ItemAttributes.Title">{{product.ItemAttributes.Title}}</h4>
                             <!--Text-->
-                            <p *ngIf="product.ItemAttributes.ListPrice != null && product.ItemAttributes.ListPrice.FormattedPrice != null">Price: {{product.ItemAttributes.ListPrice.FormattedPrice}} </p>
+                            <p *ngIf="product.ItemAttributes.ListPrice != null && product.ItemAttributes.ListPrice.FormattedPrice != null; else login">Price: {{product.ItemAttributes.ListPrice.FormattedPrice}} </p>
+                            <ng-template #login>Price not available<br></ng-template>
                             <p *ngIf="" class="card-text"></p>
-                            <a *ngIf="product.DetailPageURL != null" href="{{product.DetailPageURL}}" target="_blank" class="btn btn-primary" title="Click to open in Amazon">Open</a>
+                            <a *ngIf="product.DetailPageURL != null" href="{{product.DetailPageURL}}" target="_blank" class="btn btn-primary" title="Click to shop in Amazon"><i class="fa fa-shopping-cart" aria-hidden="true"></i> Shop Now</a>
                         </div>
                 
                     </div>
-                    </div>
-                    <div *ngIf="amazonproducts.ItemSearchErrorResponse != null">
-                            <pre>{{amazonproducts.ItemSearchErrorResponse | json}}</pre>
-                    </div>
                 </div>
-
+                    </div>
+                   
+                </div>
+                <div *ngIf="amazonproducts.ItemSearchErrorResponse != null">
+                    <!-- <pre>{{amazonproducts.ItemSearchErrorResponse | json}}</pre> -->
+                    <div *ngIf="amazonproducts.ItemSearchErrorResponse.Error != null && amazonproducts.ItemSearchErrorResponse.Error.Message != null; else amazonElseError">
+                        <span>
+                                {{amazonproducts.ItemSearchErrorResponse.Error.Message}}
+                        </span>
+                    </div>
+                    <ng-template #amazonElseError>Something went wrong</ng-template>
+            </div>
         </div>
+        
 </div>
     <!--/.Card-->
   <span *ngIf = "compareClicked == false && dataLoaded && (fkproducts == null || fkproducts.products == null || (fkproducts != null && fkproducts.products != null && fkproducts.products.length <=0))">No matching products were found !!</span>
