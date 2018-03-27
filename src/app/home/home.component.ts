@@ -9,6 +9,7 @@ import { DataService } from '../data.service';
 export class HomeComponent implements OnInit {
   productSearch:string = "";
   fkproducts:Object[];
+  amazonproducts:Object[];
   compareClicked: boolean = false;
   dataLoaded:boolean = false;
   constructor(private _data: DataService) { 
@@ -27,7 +28,19 @@ export class HomeComponent implements OnInit {
       this._data.searchFlipkart(this.productSearch).subscribe(
         data => { 
           this.fkproducts = data;
-          console.log(data)}, //this line will assign service response to local variable products
+          console.log(JSON.stringify(data))}, //this line will assign service response to local variable products
+        err => console.error(err),//this line will log a console error, if there is any issue in getting flipkart service call
+        () => {
+          console.log('Done loading products');
+          this.dataLoaded = true;
+          this.compareClicked = false; // this line will log in console when the service call is finished
+        }
+      );
+
+      this._data.searchAmazon(this.productSearch).subscribe(
+        data => { 
+          this.amazonproducts = data;
+          console.log(JSON.stringify(data))}, //this line will assign service response to local variable products
         err => console.error(err),//this line will log a console error, if there is any issue in getting flipkart service call
         () => {
           console.log('Done loading products');
