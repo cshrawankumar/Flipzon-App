@@ -59,11 +59,11 @@
                 
                     </div>
                     </div>
+                    <div *ngIf="amazonproducts.ItemSearchErrorResponse != null">
+                            <pre>{{amazonproducts.ItemSearchErrorResponse | json}}</pre>
+                    </div>
                 </div>
 
-        </div>
-        <div *ngIf="amazonproducts.ItemSearchErrorResponse != null">
-                <pre>{{amazonproducts.ItemSearchErrorResponse | json}}</pre>
         </div>
 </div>
     <!--/.Card-->
